@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import BlogPost from "./BlogPost";
 import Pagination from "./Pagination";
 import React from "react";
@@ -12,20 +12,20 @@ function BlogList() {
   const [postsPerPage, setPostsPerPage] = useState(15);
 
   /* Finding the index of the first and last item to slice the array at those exact indexes to then
-     display the correct items to the user */
-  const indexOfLastItem = currentPage * postsPerPage;
-  const indexOfFirstItem = indexOfLastItem - postsPerPage;
-  const currentPaginationData = blogs.posts.slice(
-    indexOfFirstItem,
-    indexOfLastItem
-  );
+     display the correct items to the user. Memoized the value so the function only executes when the 
+     currentPage or postsPerPage changes */
+  const currentPaginationData = useMemo(() => {
+    const indexOfLastItem = currentPage * postsPerPage;
+    const indexOfFirstItem = indexOfLastItem - postsPerPage;
 
-  /* When this function runs, it will receive a parameter of value that will be compared to the PAGE_SIZES array.
-   It will then find the first value that matches and set the postsPerPage to that value, which will
-   cause a re-render and automatically update the page. Lastly, it will reset the currentPage to 1. This 
-   resolves problems such as the user being on page 29, but now the amount of pages is only 13. */
+    return blogs.posts.slice(indexOfFirstItem, indexOfLastItem);
+  }, [currentPage, postsPerPage]);
+
+  /* When this function runs, it will receive a parameter of value that will set the postsPerPage 
+  to the desired value, which will issue a re-render. Lastly, it will reset the currentPage to 1. 
+  This resolves problems such as the user being on page 29, but now the amount of pages is only 13. */
   const updateRowsPerPage = (value) => {
-    setPostsPerPage(PAGE_SIZES.find((el) => el === Number(value)));
+    setPostsPerPage(Number(value));
     setCurrentPage(1);
   };
 

@@ -13,18 +13,9 @@ function usePagination({ currentPage, totalCount, pageSize }) {
       totalPages,
     ];
 
-  if (currentPage === 2)
-    paginationNumbers = [
-      1,
-      DOTS,
-      currentPage,
-      currentPage + 1,
-      currentPage + 2,
-      DOTS,
-      totalPages,
-    ];
+  if (currentPage <= 2) paginationNumbers = [1, 2, 3, DOTS, totalPages];
 
-  if (currentPage > 2 && currentPage < totalPages - 2)
+  if (currentPage > 2 && currentPage < totalPages - 1)
     paginationNumbers = [
       1,
       DOTS,
@@ -35,7 +26,7 @@ function usePagination({ currentPage, totalCount, pageSize }) {
       totalPages,
     ];
 
-  if (currentPage >= totalPages - 2)
+  if (currentPage > totalPages - 2)
     paginationNumbers = [1, DOTS, totalPages - 2, totalPages - 1, totalPages];
 
   if (currentPage === 1 && totalPages === 1) paginationNumbers = [1];

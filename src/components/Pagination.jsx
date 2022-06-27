@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import "../css/pagination.scss";
 
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/outline";
@@ -15,11 +16,15 @@ function Pagination({
   pageSize,
   pageSizeOptions,
 }) {
-  const paginationRange = usePagination({
-    currentPage,
-    totalCount,
-    pageSize,
-  });
+  const paginationRange = useMemo(
+    () =>
+      usePagination({
+        currentPage,
+        totalCount,
+        pageSize,
+      }),
+    [currentPage, pageSize]
+  );
 
   // Total amount of pages. Used for disabling the next button when last page is reached
   const totalPages = Math.ceil(totalCount / pageSize);
@@ -30,6 +35,13 @@ function Pagination({
 
   const onPrevious = () => {
     onPageChange(currentPage - 1);
+  };
+
+  /* Function for validating if a button should be disabled or if the current page should be set.
+  Usage is as such: aria-current={validateButtons(pageNumber, currentPage, "true")}, disabled={validateButtons(currentPage, 1, true)} */
+  const validateButtons = (val1, val2, result) => {
+    if (val1 === val2) return result;
+    return false;
   };
 
   return (
@@ -45,7 +57,7 @@ function Pagination({
           // Do not remove the aria-label below, it is used for Hatchways automation.
           aria-label="Goto previous page"
           onClick={onPrevious}
-          disabled={currentPage === 1 ? true : false} // change this line to disable a button.
+          disabled={validateButtons(currentPage, 1, true)} // change this line to disable a button.
         >
           <ChevronLeftIcon />
         </button>
@@ -66,7 +78,7 @@ function Pagination({
           <li
             key={key}
             className="paginationItem"
-            aria-current={pageNumber === currentPage ? "page" : false} // change this line to highlight a current page.
+            aria-current={validateButtons(pageNumber, currentPage, "page")} // change this line to highlight a current page.
           >
             <button
               type="button"
@@ -87,7 +99,7 @@ function Pagination({
           // Do not remove the aria-label below, it is used for Hatchways automation.
           aria-label="Goto next page"
           onClick={onNext}
-          disabled={currentPage === totalPages ? true : false} // change this line to disable a button.
+          disabled={validateButtons(currentPage, totalPages, true)} // change this line to disable a button.
         >
           <ChevronRightIcon />
         </button>
